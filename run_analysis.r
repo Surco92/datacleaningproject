@@ -1,5 +1,4 @@
 #LOADING DATA
-setwd("C:/RWD")
 train<-read.table("./UCI HAR Dataset/train/X_train.txt", quote="\"", comment.char="")
 test<-read.table("./UCI HAR Dataset/test/X_test.txt", quote="\"", comment.char="")
 #MERGING DATA
@@ -23,14 +22,30 @@ levels(subsdata2[,80])<-tolower(levels(subsdata2[,80]))
 levels(subsdata2[,80])<-sub("_"," ",levels(subsdata2[,80]),)
 #VARIABLE NAMES
 subsdata3<-subsdata2
+names(subsdata3)[80]<-"activity"
 names(subsdata3)<-sub("Acc","Acceleration",names(subsdata3),)
 names(subsdata3)<-sub("Gyro","Gyroscope",names(subsdata3),)
-names(subsdata3)<-sub("Gravit","Gravity",names(subsdata3),)
 names(subsdata3)<-sub("Mag","Magnitude",names(subsdata3),)
 names(subsdata3)<-sub("Freq","Frequency",names(subsdata3),)
+names(subsdata3)<-sub("X","X Axis",names(subsdata3),)
+names(subsdata3)<-sub("Y","Y Axis",names(subsdata3),)
+names(subsdata3)<-sub("Z","Z Axis",names(subsdata3),)
+#MEANS COMPUTATION
+subsdata4<-subsdata3
+trainsubjects <- read.table("C:/RWD/UCI HAR Dataset/train/subject_train.txt", quote="\"", comment.char="")
+testsubjects <- read.table("C:/RWD/UCI HAR Dataset/test/subject_test.txt", quote="\"", comment.char="")
+subsdata4$subjects<-as.factor(c(as.vector(trainsubjects$V1),as.vector(testsubjects$V1)))
 
+activitymeans<-matrix(rep(0,79*6),nrow=79)
+for(i in 1:79)
+	activitymeans[i,]<-tapply(subsdata4[,i],subsdata4[,80],mean)
 
-
-
-
-
+subjectsmeans<-matrix(rep(0,79*30),nrow=79)
+for(j in 1:79)
+	subjectsmeans[j,]<-tapply(subsdata4[,j],subsdata4[,81],mean)
+	
+meandata<-as.data.frame(cbind(names(subsdata)[1:79],activitymeans,subjectsmeans))
+names(meandata)[1]<-"variable name"
+names(meandata)[2:7]<-levels(subsdata2[,80])
+names(meandata)[8:37]<-levels(subsdata4[,81])
+names(meandata)[8:37]<-paste("subject",names(meandata)[8:37])
