@@ -47,22 +47,17 @@ trainsubjects <- read.table("C:/RWD/UCI HAR Dataset/train/subject_train.txt", qu
 testsubjects <- read.table("C:/RWD/UCI HAR Dataset/test/subject_test.txt", quote="\"", comment.char="")
 subsdata4$subjects<-as.factor(c(as.vector(trainsubjects$V1),as.vector(testsubjects$V1)))
 
-activitymeans<-matrix(rep(0,79*6),nrow=6)
+testmeans<-matrix(rep(0,(79*6*30)),nrow=(6*30))
 for(i in 1:79)
-	activitymeans[,i]<-tapply(subsdata4[,i],subsdata4[,80],mean)
-
-subjectsmeans<-matrix(rep(0,79*30),nrow=30)
-for(j in 1:79)
-	subjectsmeans[,j]<-tapply(subsdata4[,j],subsdata4[,81],mean)
+	testmeans[,i]<-tapply(subsdata4[,i],list(subsdata4[,80],subsdata4[,81]),mean)
 	
-meandata<-as.data.frame(rbind(activitymeans,subjectsmeans))
+meandata<-as.data.frame(testmeans)
 names(meandata)<-names(subsdata3)[1:79]
-meandata2<-cbind(numeric(36),meandata)
-names(meandata2)[1]<-"observation"
-meandata2[1:6,1]<-levels(subsdata4[,80])
-meandata2[7:36,1]<-levels(subsdata4[,81])
-meandata2[7:36,1]<-paste("subject",meandata2[7:36,1])
-meandata2[1:36,1]<-paste("mean of ",meandata2[1:36,1])
+meandata2<-cbind(numeric(36),numeric(36),meandata)
+names(meandata2)[1]<-"activity name"
+names(meandata2)[2]<-"subject id"
+meandata2[,1]<-rep(levels(subsdata4[,80]),30)
+meandata2[,2]<-rep(1:30,each=6)
 
 #CLEAN DATASET OUTPUT
 write.table(x=meandata2,file="./output.txt",row.name=FALSE)
