@@ -47,11 +47,11 @@ trainsubjects <- read.table("C:/RWD/UCI HAR Dataset/train/subject_train.txt", qu
 testsubjects <- read.table("C:/RWD/UCI HAR Dataset/test/subject_test.txt", quote="\"", comment.char="")
 subsdata4$subjects<-as.factor(c(as.vector(trainsubjects$V1),as.vector(testsubjects$V1)))
 
-testmeans<-matrix(rep(0,(79*6*30)),nrow=(6*30))
+matrixmeans<-matrix(rep(0,(79*6*30)),nrow=(6*30))
 for(i in 1:79)
-	testmeans[,i]<-tapply(subsdata4[,i],list(subsdata4[,80],subsdata4[,81]),mean)
+	matrixmeans[,i]<-tapply(subsdata4[,i],list(subsdata4[,80],subsdata4[,81]),mean)
 	
-meandata<-as.data.frame(testmeans)
+meandata<-as.data.frame(matrixmeans)
 names(meandata)<-names(subsdata3)[1:79]
 meandata2<-cbind(numeric(36),numeric(36),meandata)
 names(meandata2)[1]<-"activity name"
