@@ -27,17 +27,19 @@ levels(subsdata2[,80])<-sub("_"," ",levels(subsdata2[,80]),)
 #5 VARIABLE NAMES
 subsdata3<-subsdata2
 names(subsdata3)[80]<-"Activity"
-names(subsdata3)<-sub("^t","TimeDomainSignal-",names(subsdata3),)
-names(subsdata3)<-sub("^f","FastFourierTransform-",names(subsdata3),)
-names(subsdata3)<-sub("Acc","Acceleration",names(subsdata3),)
-names(subsdata3)<-sub("Gyro","Gyroscope",names(subsdata3),)
-names(subsdata3)<-sub("Mag","Magnitude",names(subsdata3),)
-names(subsdata3)<-sub("Freq","Frequency",names(subsdata3),)
+names(subsdata3)<-sub("^t","Time Domain Signal-",names(subsdata3),)
+names(subsdata3)<-sub("^f","Fast Fourier Transform-",names(subsdata3),)
+names(subsdata3)<-sub("Acc","Acceleration ",names(subsdata3),)
+names(subsdata3)<-sub("Gyro","Gyroscope ",names(subsdata3),)
+names(subsdata3)<-gsub("Body","Body ",names(subsdata3),)
+names(subsdata3)<-sub("Gravity","Gravity ",names(subsdata3),)
+names(subsdata3)<-sub("Mag","Magnitude ",names(subsdata3),)
+names(subsdata3)<-sub("Freq","Frequency ",names(subsdata3),)
 names(subsdata3)<-sub("mean()","Mean",names(subsdata3),)
-names(subsdata3)<-sub("std()","StandardDeviation",names(subsdata3),)
-names(subsdata3)<-sub("X","XAxis",names(subsdata3),)
-names(subsdata3)<-sub("Y","YAxis",names(subsdata3),)
-names(subsdata3)<-sub("Z","ZAxis",names(subsdata3),)
+names(subsdata3)<-sub("std()","Standard Deviation",names(subsdata3),)
+names(subsdata3)<-sub("X","X Axis",names(subsdata3),)
+names(subsdata3)<-sub("Y","Y Axis",names(subsdata3),)
+names(subsdata3)<-sub("Z","Z Axis",names(subsdata3),)
 
 #6 MEANS COMPUTATION
 subsdata4<-subsdata3
@@ -45,19 +47,22 @@ trainsubjects <- read.table("C:/RWD/UCI HAR Dataset/train/subject_train.txt", qu
 testsubjects <- read.table("C:/RWD/UCI HAR Dataset/test/subject_test.txt", quote="\"", comment.char="")
 subsdata4$subjects<-as.factor(c(as.vector(trainsubjects$V1),as.vector(testsubjects$V1)))
 
-activitymeans<-matrix(rep(0,79*6),nrow=79)
+activitymeans<-matrix(rep(0,79*6),nrow=6)
 for(i in 1:79)
-	activitymeans[i,]<-tapply(subsdata4[,i],subsdata4[,80],mean)
+	activitymeans[,i]<-tapply(subsdata4[,i],subsdata4[,80],mean)
 
-subjectsmeans<-matrix(rep(0,79*30),nrow=79)
+subjectsmeans<-matrix(rep(0,79*30),nrow=30)
 for(j in 1:79)
-	subjectsmeans[j,]<-tapply(subsdata4[,j],subsdata4[,81],mean)
+	subjectsmeans[,j]<-tapply(subsdata4[,j],subsdata4[,81],mean)
 	
-meandata<-as.data.frame(cbind(names(subsdata)[1:79],activitymeans,subjectsmeans))
-names(meandata)[1]<-"variable name"
-names(meandata)[2:7]<-levels(subsdata2[,80])
-names(meandata)[8:37]<-levels(subsdata4[,81])
-names(meandata)[8:37]<-paste("subject",names(meandata)[8:37])
+meandata<-as.data.frame(rbind(activitymeans,subjectsmeans))
+names(meandata)<-names(subsdata3)[1:79]
+meandata2<-cbind(numeric(36),meandata)
+names(meandata2)[1]<-"observation"
+meandata2[1:6,1]<-levels(subsdata4[,80])
+meandata2[7:36,1]<-levels(subsdata4[,81])
+meandata2[7:36,1]<-paste("subject",meandata2[7:36,1])
+meandata2[1:36,1]<-paste("mean of ",meandata2[1:36,1])
 
 #CLEAN DATASET OUTPUT
-write.table(x=subsdata3,file="./output.txt",row.name=FALSE)
+write.table(x=meandata2,file="./output.txt",row.name=FALSE)
