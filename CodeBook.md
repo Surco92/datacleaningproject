@@ -11,4 +11,4 @@ I created new data frame called "subsdata3" in which I changed names to be more 
 #6 MEANS COMPUTATION
 I created new data frame named "subsdata4" to perform this part of analysis. I loaded data about subjects for training and test set from original data folder, creating data frames "trainsubjects and "testsubjects". Next, I merged these two data frames to create single vector of factors and inserted this vector as a new variable named "subjects" to "subsdata4" data frame. To compute means by subject and by activity I used "tapply()" and "for()" functions. Output from this procedure for activities is matrix "matrixmeans". Next, I  binded this matrix with two empty columns to create data frame "meandata". Next, I transformed those two empty vectors to represent activities and subjects and  I created new data frame "meandata2". In activities column I used activity name and in subjects column subject id. 
 #7 CLEAN DATASET OUTPUT
-Clean dataset is created from "meandata" data frame.
+Clean dataset is created from "meandata2" data frame.
